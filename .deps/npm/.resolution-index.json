@@ -1,0 +1,10 @@
+{
+  "LayBy.sol": {
+    "__sources__": {
+      "LayBy.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\ncontract LayBy {\n    enum Status { Active, Completed, Collected, Cancelled, Expired }\n\n    struct LayByRecord {\n        address shop;\n        address customer;\n        string item;\n        uint256 price;\n        uint256 paid;\n        uint64 completionDate;\n        uint16 feeBps;\n        Status status;\n    }\n\n    uint256 public nextId = 1;\n    mapping(uint256 => LayByRecord) private layBys;\n\n    event LayByCreated(\n        uint256 indexed id,\n        address indexed shop,\n        address indexed customer,\n        string item,\n        uint256 price,\n        uint64 completionDate,\n        uint16 feeBps\n    );\n\n    function createLayBy(\n        address customer,\n        string calldata item,\n        uint256 price,\n        uint64 completionDate,\n        uint16 feeBps\n    ) external returns (uint256 id) {\n        require(price > 0, \"Price must be above zero\");\n        require(customer != address(0) && customer != msg.sender, \"Invalid customer\");\n\n        id = nextId++;\n        layBys[id] = LayByRecord({\n            shop: msg.sender,\n            customer: customer,\n            item: item,\n            price: price,\n            paid: 0,\n            completionDate: completionDate,\n            feeBps: feeBps,\n            status: Status.Active\n        });\n\n        emit LayByCreated(id, msg.sender, customer, item, price, completionDate, feeBps);\n    }\n\n    function getLayBy(uint256 id) external view returns (LayByRecord memory) {\n        require(layBys[id].shop != address(0), \"Lay-by not found\");\n        return layBys[id];\n    }\n}",
+        "file": "LayBy.sol"
+      }
+    }
+  }
+}

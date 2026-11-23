@@ -1,0 +1,208 @@
+{
+	"compiler": {
+		"version": "0.8.34+commit.80d5c536"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "shop",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "customer",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "item",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint64",
+						"name": "completionDate",
+						"type": "uint64"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint16",
+						"name": "feeBps",
+						"type": "uint16"
+					}
+				],
+				"name": "LayByCreated",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "customer",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "item",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint64",
+						"name": "completionDate",
+						"type": "uint64"
+					},
+					{
+						"internalType": "uint16",
+						"name": "feeBps",
+						"type": "uint16"
+					}
+				],
+				"name": "createLayBy",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					}
+				],
+				"name": "getLayBy",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "shop",
+								"type": "address"
+							},
+							{
+								"internalType": "address",
+								"name": "customer",
+								"type": "address"
+							},
+							{
+								"internalType": "string",
+								"name": "item",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "price",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "paid",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint64",
+								"name": "completionDate",
+								"type": "uint64"
+							},
+							{
+								"internalType": "uint16",
+								"name": "feeBps",
+								"type": "uint16"
+							},
+							{
+								"internalType": "enum LayBy.Status",
+								"name": "status",
+								"type": "uint8"
+							}
+						],
+						"internalType": "struct LayBy.LayByRecord",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "nextId",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"LayBy.sol": "LayBy"
+		},
+		"evmVersion": "osaka",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"LayBy.sol": {
+			"keccak256": "0xdff7ecbc432db79ef31ab2361feab561b9ad3bb025df9458bb9424450ae71f29",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://b0ff0c1550956e1a6aecd47b9e6ce2f883ac3e663e49952740f329581b4c2888",
+				"dweb:/ipfs/QmRqC9mw2rhfkAvxzumf16umT2V2J9YW5hfFFcg3WZ5xkn"
+			]
+		}
+	},
+	"version": 1
+}
