@@ -160,6 +160,19 @@
 				"type": "event"
 			},
 			{
+				"inputs": [],
+				"name": "MAX_FEE_BPS",
+				"outputs": [
+					{
+						"internalType": "uint16",
+						"name": "",
+						"type": "uint16"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "uint256",
@@ -209,6 +222,25 @@
 					}
 				],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					}
+				],
+				"name": "feeIfCancelled",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -346,11 +378,11 @@
 	},
 	"sources": {
 		"LayBy.sol": {
-			"keccak256": "0xd055aacfbe7c1e6cf5a434f685abf9019576a58c053c8ff18a9b3b407fc29a99",
+			"keccak256": "0x64a53c64182e41f49dfbe75305d917e8661fc714f947c0cc6b4b6c7121cb137c",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://ce5293b7bd0a63cff8f2b8ed0e894e8944e014e35dd3a249ea59196d21317748",
-				"dweb:/ipfs/QmdtCYH2YkMJXou1PPLVXHAEDwWxs6E5rtBKtv6tewYxnA"
+				"bzz-raw://27e52d217410e2bf3c88817fe2776f3496dbbbc3b8ff7051fe080813d1811104",
+				"dweb:/ipfs/QmaWEUTLzgBkrh9qYuuNg5a9ZRYWjEBEpvexerE2abisyP"
 			]
 		}
 	},

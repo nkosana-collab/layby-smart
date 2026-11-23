@@ -16,6 +16,7 @@ contract LayBy {
     }
 
     uint256 public nextId = 1;
+    uint16 public constant MAX_FEE_BPS = 100; // 100 basis points = 1% of the full price
     mapping(uint256 => LayByRecord) private layBys;
 
     event LayByCreated(
@@ -37,6 +38,8 @@ contract LayBy {
     ) external returns (uint256 id) {
         require(price > 0, "Price must be above zero");
         require(customer != address(0) && customer != msg.sender, "Invalid customer");
+        require(completionDate > block.timestamp, "Completion date must be in the future");
+        require(feeBps <= MAX_FEE_BPS, "Fee exceeds 1% of price");
 
         id = nextId++;
         layBys[id] = LayByRecord({
@@ -92,6 +95,14 @@ contract LayBy {
     }
 
 
+    function feeIfCancelled(uint256 id) public view returns (uint256) {
+        LayByRecord storage l = layBys[id];
+        require(l.shop != address(0), "Lay-by not found");
+        uint256 fee = (l.price * l.feeBps) / 10000;
+        return fee > l.paid ? l.paid : fee;
+    }
+
+
     function confirmCollection(uint256 id) external {
         LayByRecord storage l = layBys[id];
         require(l.shop != address(0), "Lay-by not found");
@@ -106,7 +117,6 @@ contract LayBy {
 
         emit LayByCollected(id, l.shop, msg.sender, amount);
     }
-
 
 
     event LayByCompleted(
