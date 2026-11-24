@@ -17,6 +17,13 @@ contract LayBy {
 
     uint256 public nextId = 1;
     uint16 public constant MAX_FEE_BPS = 100; // 100 basis points = 1% of the full price
+
+    uint256 public immutable graceSeconds;
+
+    constructor(uint256 graceSeconds_) {
+        graceSeconds = graceSeconds_;
+    }
+
     mapping(uint256 => LayByRecord) private layBys;
 
     event LayByCreated(
@@ -75,6 +82,7 @@ contract LayBy {
         LayByRecord storage l = layBys[id];
         require(l.shop != address(0), "Lay-by not found");
         require(msg.sender == l.customer, "Only the customer can pay");
+        require(block.timestamp < expiryTime(id), "Lay-by has expired");
         require(l.status == Status.Active, "Lay-by is not active");
         require(msg.value > 0, "Payment must be above zero");
         require(msg.value <= l.price - l.paid, "Payment exceeds remaining balance");
@@ -154,6 +162,38 @@ contract LayBy {
     }
 
 
+
+    function expiryTime(uint256 id) public view returns (uint256) {
+        require(layBys[id].shop != address(0), "Lay-by not found");
+        return uint256(layBys[id].completionDate) + graceSeconds;
+    }
+
+    function expire(uint256 id) external {
+        LayByRecord storage l = layBys[id];
+        require(l.shop != address(0), "Lay-by not found");
+        require(msg.sender == l.shop, "Only the shop can expire a lay-by");
+        require(l.status == Status.Active, "Lay-by is not active");
+        require(block.timestamp >= expiryTime(id), "Expiry time not reached");
+
+        uint256 paid = l.paid;
+        uint256 fee = feeIfCancelled(id);
+        uint256 refund = paid - fee;
+        l.status = Status.Expired; // state first, money second
+
+        if (fee > 0) {
+            (bool okFee, ) = l.shop.call{value: fee}("");
+            require(okFee, "Fee transfer failed");
+        }
+        if (refund > 0) {
+            (bool okRefund, ) = l.customer.call{value: refund}("");
+            require(okRefund, "Refund transfer failed");
+        }
+
+        emit LayByExpired(id, l.shop, paid, fee, refund);
+    }
+
+
+
     event LayByCompleted(
         uint256 indexed id,
         address indexed shop,
@@ -169,9 +209,19 @@ contract LayBy {
         uint256 amountReleased
     );
 
+
     event LayByCancelled(
         uint256 indexed id,
         address indexed cancelledBy,
+        uint256 amountPaid,
+        uint256 fee,
+        uint256 refund
+    );
+
+
+    event LayByExpired(
+        uint256 indexed id,
+        address indexed shop,
         uint256 amountPaid,
         uint256 fee,
         uint256 refund

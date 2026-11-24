@@ -6,6 +6,17 @@
 	"output": {
 		"abi": [
 			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "graceSeconds_",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
 				"anonymous": false,
 				"inputs": [
 					{
@@ -169,6 +180,43 @@
 						"type": "address"
 					},
 					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amountPaid",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "fee",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "refund",
+						"type": "uint256"
+					}
+				],
+				"name": "LayByExpired",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "shop",
+						"type": "address"
+					},
+					{
 						"indexed": true,
 						"internalType": "address",
 						"name": "payer",
@@ -282,6 +330,38 @@
 						"type": "uint256"
 					}
 				],
+				"name": "expire",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					}
+				],
+				"name": "expiryTime",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					}
+				],
 				"name": "feeIfCancelled",
 				"outputs": [
 					{
@@ -349,6 +429,19 @@
 						"internalType": "struct LayBy.LayByRecord",
 						"name": "",
 						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "graceSeconds",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -428,11 +521,11 @@
 	},
 	"sources": {
 		"LayBy.sol": {
-			"keccak256": "0x64f7e8347bfd904a6f1f96256f0e3ff32a90d5e69f8b22ef09c5408aff853161",
+			"keccak256": "0xa8b5d7fe52e412899c34719e5771c73d1c63038b703b1fcc011c6a30789982d1",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4be0c3683e25e409a83fbb5dd84c840151fc59d34e11151719431d3d86f67fa3",
-				"dweb:/ipfs/QmZQ1pzJQFwSxEcz546uMUbnMMJtUVc15sQ2st2qZGhiqM"
+				"bzz-raw://ae11b554f8f2c9286ced2a42a0c0470e2f6ef89fb2f12eb0c90359882b538570",
+				"dweb:/ipfs/QmS6TSyo4ULyST3NMMhteKWh7tKZU55Jn9WT7ZRUtR1rVH"
 			]
 		}
 	},
