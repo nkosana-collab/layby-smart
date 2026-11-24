@@ -119,6 +119,41 @@ contract LayBy {
     }
 
 
+    function cancel(uint256 id) external {
+        LayByRecord storage l = layBys[id];
+        require(l.shop != address(0), "Lay-by not found");
+
+        uint256 fee;
+        if (msg.sender == l.customer) {
+            require(l.status == Status.Active, "Customer can only cancel an active lay-by");
+            fee = feeIfCancelled(id);
+        } else if (msg.sender == l.shop) {
+            require(
+                l.status == Status.Active || l.status == Status.Completed,
+                "Lay-by cannot be cancelled"
+            );
+            fee = 0; // shop cancels: full refund, no fee
+        } else {
+            revert("Only the customer or shop can cancel");
+        }
+
+        uint256 paid = l.paid;
+        uint256 refund = paid - fee;
+        l.status = Status.Cancelled; // state first, money second
+
+        if (fee > 0) {
+            (bool okFee, ) = l.shop.call{value: fee}("");
+            require(okFee, "Fee transfer failed");
+        }
+        if (refund > 0) {
+            (bool okRefund, ) = l.customer.call{value: refund}("");
+            require(okRefund, "Refund transfer failed");
+        }
+
+        emit LayByCancelled(id, msg.sender, paid, fee, refund);
+    }
+
+
     event LayByCompleted(
         uint256 indexed id,
         address indexed shop,
@@ -132,5 +167,13 @@ contract LayBy {
         address indexed shop,
         address indexed customer,
         uint256 amountReleased
+    );
+
+    event LayByCancelled(
+        uint256 indexed id,
+        address indexed cancelledBy,
+        uint256 amountPaid,
+        uint256 fee,
+        uint256 refund
     );
 }

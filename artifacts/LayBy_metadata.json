@@ -17,6 +17,43 @@
 					{
 						"indexed": true,
 						"internalType": "address",
+						"name": "cancelledBy",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amountPaid",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "fee",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "refund",
+						"type": "uint256"
+					}
+				],
+				"name": "LayByCancelled",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
 						"name": "shop",
 						"type": "address"
 					},
@@ -170,6 +207,19 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					}
+				],
+				"name": "cancel",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -378,11 +428,11 @@
 	},
 	"sources": {
 		"LayBy.sol": {
-			"keccak256": "0x64a53c64182e41f49dfbe75305d917e8661fc714f947c0cc6b4b6c7121cb137c",
+			"keccak256": "0x64f7e8347bfd904a6f1f96256f0e3ff32a90d5e69f8b22ef09c5408aff853161",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://27e52d217410e2bf3c88817fe2776f3496dbbbc3b8ff7051fe080813d1811104",
-				"dweb:/ipfs/QmaWEUTLzgBkrh9qYuuNg5a9ZRYWjEBEpvexerE2abisyP"
+				"bzz-raw://4be0c3683e25e409a83fbb5dd84c840151fc59d34e11151719431d3d86f67fa3",
+				"dweb:/ipfs/QmZQ1pzJQFwSxEcz546uMUbnMMJtUVc15sQ2st2qZGhiqM"
 			]
 		}
 	},
