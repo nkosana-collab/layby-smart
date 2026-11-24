@@ -25,6 +25,8 @@ contract LayBy {
     }
 
     mapping(uint256 => LayByRecord) private layBys;
+    mapping(address => uint256[]) private customerLayBys;
+    mapping(address => uint256[]) private shopLayBys;
 
     event LayByCreated(
         uint256 indexed id,
@@ -59,6 +61,10 @@ contract LayBy {
             feeBps: feeBps,
             status: Status.Active
         });
+
+        customerLayBys[customer].push(id);
+        shopLayBys[msg.sender].push(id);
+
 
         emit LayByCreated(id, msg.sender, customer, item, price, completionDate, feeBps);
     }
@@ -101,6 +107,16 @@ contract LayBy {
         require(layBys[id].shop != address(0), "Lay-by not found");
         return layBys[id].price - layBys[id].paid;
     }
+
+
+    function layBysOfCustomer(address customer) external view returns (uint256[] memory) {
+        return customerLayBys[customer];
+    }
+
+    function layBysOfShop(address shop) external view returns (uint256[] memory) {
+        return shopLayBys[shop];
+    }
+
 
 
     function feeIfCancelled(uint256 id) public view returns (uint256) {
