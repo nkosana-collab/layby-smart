@@ -1,0 +1,98 @@
+{
+	"compiler": {
+		"version": "0.8.34+commit.80d5c536"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					}
+				],
+				"name": "cancel",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "customer",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "item",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint64",
+						"name": "completionDate",
+						"type": "uint64"
+					},
+					{
+						"internalType": "uint16",
+						"name": "feeBps",
+						"type": "uint16"
+					}
+				],
+				"name": "createLayBy",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"ReentrancyShop.sol": "ILayBy"
+		},
+		"evmVersion": "osaka",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"ReentrancyShop.sol": {
+			"keccak256": "0xc558284900a7e4d445168df0bf9c36fab246006b78207cea540d7a7ed02c91bb",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c70f8f5f56416816eb8d8aeb69d87dfd88267b9e3e423c3d19f024ce19bc192c",
+				"dweb:/ipfs/QmXk6tgZMHCmWT29HtEaxhM2Qo7BYBvvsdWUzwoDf431K1"
+			]
+		}
+	},
+	"version": 1
+}

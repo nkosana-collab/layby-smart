@@ -6,5 +6,13 @@
         "file": "LayBy.sol"
       }
     }
+  },
+  "ReentrancyShop.sol": {
+    "__sources__": {
+      "ReentrancyShop.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\ninterface ILayBy {\n    function createLayBy(\n        address customer,\n        string calldata item,\n        uint256 price,\n        uint64 completionDate,\n        uint16 feeBps\n    ) external returns (uint256);\n    function cancel(uint256 id) external;\n}\n\ncontract ReentrancyShop {\n    ILayBy public target;\n    uint256 public targetId;\n    bool public reenterEnabled;\n    bool public rejectPayments;\n    bool public attackSucceeded;\n    bool public attackBlocked;\n\n    constructor(address layBy) {\n        target = ILayBy(layBy);\n    }\n\n    function create(address customer, uint256 price, uint64 completionDate, uint16 feeBps) external {\n        targetId = target.createLayBy(customer, \"Attack TV\", price, completionDate, feeBps);\n    }\n\n    function setReenter(bool on) external { reenterEnabled = on; }\n    function setReject(bool on) external { rejectPayments = on; }\n\n    receive() external payable {\n        require(!rejectPayments, \"Shop rejects payments\");\n        if (reenterEnabled) {\n            reenterEnabled = false; // one attempt only\n            try target.cancel(targetId) {\n                attackSucceeded = true;\n            } catch {\n                attackBlocked = true;\n            }\n        }\n    }\n}",
+        "file": "ReentrancyShop.sol"
+      }
+    }
   }
 }
