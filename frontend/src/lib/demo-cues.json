@@ -1,0 +1,11 @@
+[
+  "This is Lay-by Smart, live on Avalanche Fuji. One customer, three lay-bys, each with its own agreement ID, read straight from the smart contract.",
+  "She pays an instalment on the TV. The payment screen names the exact lay-by and the shop. Every instalment names its lay-by.",
+  "Here is the receipt, with a public record on Snowtrace. Only the TV balance moved.",
+  "Now a stranger tries to pay into her lay-by. The contract refuses: only the customer can pay. Nothing was signed, and no gas was spent.",
+  "She tries to overpay, and is refused again. Then she pays the full balance, and the lay-by is completed. The money waits in the contract, not the till.",
+  "Once she has the TV in hand, she confirms collection. Only then is the money released to the shop.",
+  "She cancels the fridge. The fee and her refund are shown before she signs. The fee was fixed up front, never more than one percent.",
+  "The sofa ran past its date. The shop settles the expiry, and the rule splits the money. Nobody negotiates.",
+  "Every step is a public record on Avalanche. Lay-by Smart: fair lay-by, on chain."
+]
