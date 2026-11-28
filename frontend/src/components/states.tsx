@@ -56,19 +56,3 @@ export function ErrorState({ title = "Something went wrong", body, action }: { t
     </div>
   );
 }
-
-/** Must appear on every page that renders src/lib/fixtures data. */
-export function FixtureBanner() {
-  return (
-    <div
-      role="note"
-      className="mb-5 flex items-start gap-2.5 rounded-[10px] border border-dashed border-warning bg-warning-bg px-4 py-3 text-[13px] text-warning"
-    >
-      <strong className="shrink-0 rounded-[6px] bg-warning px-1.5 py-0.5 text-[11px] uppercase tracking-wide text-white">Sample data</strong>
-      <span>
-        These lay-bys are design fixtures, not read from the blockchain. Buttons preview each step without sending a transaction.
-        Live contract data arrives in Phase 2.
-      </span>
-    </div>
-  );
-}

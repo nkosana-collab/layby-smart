@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import { Suspense } from "react";
+import "./globals.css";
+import { Providers } from "@/components/providers";
 import { SiteHeader, SiteHeaderWithPath } from "@/components/site-header";
-import { ToastProvider } from "@/components/toast";
 
 export const metadata: Metadata = {
   title: { default: "Lay-by Smart", template: "%s · Lay-by Smart" },
@@ -14,7 +14,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en-ZA" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
-        <ToastProvider>
+        <Providers>
           <a
             href="#main"
             className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-button focus:bg-surface focus:px-4 focus:py-2"
@@ -29,9 +29,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             {children}
           </div>
           <footer className="px-4 py-6 text-center text-xs text-subtle">
-            Lay-by Smart · Prototype on Avalanche Fuji · Test AVAX only · Not legal or financial advice
+            Lay-by Smart · Prototype on Avalanche Fuji · Test AVAX only · Not audited · Not legal or financial advice
           </footer>
-        </ToastProvider>
+        </Providers>
       </body>
     </html>
   );

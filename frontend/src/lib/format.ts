@@ -28,5 +28,10 @@ export function formatDuration(seconds: bigint): string {
   return `${Math.round(s / 86400)} days`;
 }
 
+/** Parses a route segment as a lay-by ID (positive integer). */
+export function parseId(segment: string): bigint | null {
+  return /^[1-9]\d{0,30}$/.test(segment) ? BigInt(segment) : null;
+}
+
 export const explorerTx = (hash: string) => `${FUJI.explorerUrl}/tx/${hash}`;
 export const explorerAddress = (a: string) => `${FUJI.explorerUrl}/address/${a}`;

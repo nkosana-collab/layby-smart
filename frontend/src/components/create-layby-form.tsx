@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent, type ReactNode } from "react";
+import { isAddress } from "viem";
 import type { Address, TxHash } from "@/lib/contract/types";
 import { MAX_FEE_BPS, bpsToPercent, formatAvax, parseAvax, percentToBps } from "@/lib/money";
 import { formatDateTime, formatDuration } from "@/lib/format";
@@ -32,6 +33,7 @@ export function validateCreate(
   const errors: Errors = {};
   const customer = input.customer.trim();
   if (!/^0x[0-9a-fA-F]{40}$/.test(customer)) errors.customer = "Enter a wallet address: 0x followed by 40 hex characters.";
+  else if (!isAddress(customer)) errors.customer = "That address has a typo: its capital letters don't match the checksum. Copy it again from the wallet.";
   else if (/^0x0{40}$/.test(customer)) errors.customer = "The zero address can't be a customer.";
   else if (shop && customer.toLowerCase() === shop.toLowerCase()) errors.customer = "A shop can't create a lay-by for its own wallet.";
 
@@ -65,8 +67,11 @@ export function validateCreate(
 export function CreateLayByForm({
   graceSeconds,
   onSubmit,
+  shop,
 }: {
   graceSeconds: bigint;
+  /** Connected shop wallet, for the customer != shop check. */
+  shop?: Address;
   /** Phase 2: simulate + sign createLayBy, return the new ID from the LayByCreated event. */
   onSubmit?: (args: CreateLayByArgs) => Promise<{ id: bigint; txHash: TxHash }>;
 }) {
@@ -82,7 +87,7 @@ export function CreateLayByForm({
 
   function review(e: FormEvent) {
     e.preventDefault();
-    const r = validateCreate(values, Date.now());
+    const r = validateCreate(values, Date.now(), shop);
     setErrors(r.errors);
     if (r.args) {
       setError(null);

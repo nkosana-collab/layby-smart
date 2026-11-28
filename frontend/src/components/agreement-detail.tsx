@@ -35,6 +35,11 @@ export interface AgreementDetailProps {
    * waits for the receipt. Without one, confirming shows a labelled preview.
    */
   onSubmit?: (action: AgreementAction) => Promise<{ txHash: TxHash; blockNumber?: bigint }>;
+  /** Connected wallet on Fuji, if any. Used only to warn; the contract decides. */
+  wallet?: `0x${string}`;
+  /** Why actions can't be signed right now. */
+  connectHint?: "connect" | "switch";
+  historyState?: "loading" | "error" | "incomplete" | "ok";
 }
 
 type Dialog = "pay" | "collect" | "cancel" | "expire" | null;
@@ -48,6 +53,9 @@ export function AgreementDetail({
   shopName,
   initialAction,
   onSubmit,
+  wallet,
+  connectHint,
+  historyState = "ok",
 }: AgreementDetailProps) {
   const toast = useToast();
   const label = statusLabel(l, nowSeconds, graceSeconds);
@@ -58,13 +66,26 @@ export function AgreementDetail({
   const customerFee = feeIfCancelled(l);
   const back = viewer === "customer" ? "/customer" : "/shop";
 
-  // Which actions the contract would accept from this viewer right now.
+  // Which buttons this portal shows. The UI warns; the contract decides. A button
+  // may stay available to a wallet the contract will refuse, so the refusal is visible
+  // (it's caught in simulation, before any signature or gas).
   const can = {
     pay: viewer === "customer" && active && !overdue,
     collect: viewer === "customer" && completed,
     cancel: viewer === "customer" ? active : active || completed,
-    expire: viewer === "shop" && overdue,
+    expire: viewer === "shop" && active,
   };
+  const same = (a?: string, b?: string) => !!a && !!b && a.toLowerCase() === b.toLowerCase();
+  const notCustomer = !!wallet && !same(wallet, l.customer);
+  const notShop = !!wallet && !same(wallet, l.shop);
+  const roleWarning =
+    viewer === "customer" && notCustomer
+      ? "This wallet isn't the customer on this lay-by. The contract will refuse to let it pay, cancel or collect."
+      : viewer === "shop" && notShop
+        ? "This wallet isn't the shop on this lay-by. The contract will refuse to let it cancel or expire."
+        : null;
+  const signDisabled = !!connectHint;
+  const expiryNotYet = viewer === "shop" && active && !overdue;
 
   const [dialog, setDialog] = useState<Dialog>(initialAction === "pay" && can.pay ? "pay" : null);
   const [amountText, setAmountText] = useState("");
@@ -73,8 +94,9 @@ export function AgreementDetail({
   const [receipt, setReceipt] = useState<{ title: string; lines: Array<[string, ReactNode]>; txHash?: TxHash; blockNumber?: bigint } | null>(null);
 
   const amount = parseAvax(amountText);
-  const amountError =
-    amountText === "" ? null : amount === null || amount === 0n ? "Enter a positive amount, up to 18 decimals." : amount > remaining ? `You can pay at most ${formatAvax(remaining, 18)}.` : null;
+  const amountError = amountText === "" ? null : amount === null || amount === 0n ? "Enter a positive amount, up to 18 decimals." : null;
+  const amountWarning =
+    amount !== null && amount > remaining ? `That's more than the ${formatAvax(remaining, 18)} left. The contract will refuse it.` : null;
 
   const fee = dialog === "expire" || viewer === "customer" ? customerFee : 0n;
   const refund = l.paid - fee;
@@ -90,13 +112,13 @@ export function AgreementDetail({
     let title: string;
     let lines: Array<[string, ReactNode]>;
     if (dialog === "pay") {
-      if (amount === null || amount === 0n || amount > remaining) {
+      if (amount === null || amount === 0n) {
         setError(amountError ?? "Enter an amount.");
         return;
       }
       action = { kind: "pay", amount };
       title = "Payment recorded";
-      lines = [["Lay-by", `#${l.id} · ${l.item}`], ["Paid", formatAvax(amount, 18)], ["Remaining after", formatAvax(remaining - amount, 18)]];
+      lines = [["Lay-by", `#${l.id} · ${l.item}`], ["Paid", formatAvax(amount, 18)], ["Remaining after", formatAvax(remaining > amount ? remaining - amount : 0n, 18)]];
     } else if (dialog === "collect") {
       action = { kind: "collect" };
       title = "Collection confirmed";
@@ -182,12 +204,21 @@ export function AgreementDetail({
             {completed && viewer === "customer" && (
               <Notice tone="warning" className="mt-4">Fully paid. Confirm collection only after you have the item in hand.</Notice>
             )}
+            {roleWarning && <Notice tone="warning" className="mt-4">{roleWarning}</Notice>}
+            {expiryNotYet && (
+              <Notice className="mt-4">The shop can settle an expiry from {formatDateTime(expiryTime(l, graceSeconds))}. Before then the contract refuses it.</Notice>
+            )}
+            {connectHint && (
+              <Notice className="mt-4">
+                {connectHint === "connect" ? "Connect your wallet" : "Switch your wallet to Avalanche Fuji"} to act on this lay-by. Anyone can view it.
+              </Notice>
+            )}
             <div className="mt-[18px] flex flex-wrap gap-2.5">
-              {can.pay && <Button onClick={() => open("pay")}>Pay instalment</Button>}
-              {can.collect && <Button onClick={() => open("collect")}>Confirm collection</Button>}
-              {can.expire && <Button onClick={() => open("expire")}>Settle expiry</Button>}
+              {can.pay && <Button disabled={signDisabled} onClick={() => open("pay")}>Pay instalment</Button>}
+              {can.collect && <Button disabled={signDisabled} onClick={() => open("collect")}>Confirm collection</Button>}
+              {can.expire && <Button disabled={signDisabled} onClick={() => open("expire")}>Settle expiry</Button>}
               {can.cancel && (
-                <Button variant="danger" onClick={() => open("cancel")}>
+                <Button variant="danger" disabled={signDisabled} onClick={() => open("cancel")}>
                   Cancel lay-by
                 </Button>
               )}
@@ -195,7 +226,12 @@ export function AgreementDetail({
           </Card>
           <Card>
             <h2 className="mb-1 text-[22px] font-bold tracking-[-0.6px]">Activity timeline</h2>
-            <Timeline events={events} />
+            {historyState === "loading" && <p className="text-muted">Loading the contract&apos;s events…</p>}
+            {historyState === "error" && <p className="text-danger">Couldn&apos;t load the event history right now. The balances above come straight from the contract.</p>}
+            {historyState === "incomplete" && (
+              <Notice tone="warning" className="mb-2">The history index is still catching up, so some payments may be missing below. The balances above come straight from the contract.</Notice>
+            )}
+            {historyState !== "loading" && historyState !== "error" && <Timeline events={events} />}
           </Card>
         </div>
 
@@ -251,8 +287,17 @@ export function AgreementDetail({
           />
         </label>
         <div id="pay-amount-help" className="mt-1 text-[13px] text-subtle">
-          {amountError ? <span className="text-danger">{amountError}</span> : amount ? `Remaining after: ${formatAvax(remaining - (amount > remaining ? remaining : amount), 18)}` : "Any amount up to the remaining balance."}
+          {amountError ? (
+            <span className="text-danger">{amountError}</span>
+          ) : amountWarning ? (
+            <span className="text-warning">{amountWarning}</span>
+          ) : amount ? (
+            `Remaining after: ${formatAvax(remaining - amount, 18)}`
+          ) : (
+            "Any amount up to the remaining balance."
+          )}
         </div>
+        {roleWarning && <Notice tone="warning" className="mt-2">{roleWarning}</Notice>}
         <Button variant="secondary" className="mt-2" onClick={() => setAmountText(toAvaxDecimal(remaining))}>
           Pay full balance
         </Button>
@@ -291,6 +336,10 @@ export function AgreementDetail({
           <Line label="Fee to shop">{formatAvax(fee, 18)}</Line>
           <Line label="Refund to customer">{formatAvax(refund, 18)}</Line>
         </Lines>
+        {dialog === "expire" && !overdue && (
+          <Notice tone="warning" className="mt-3">Payments only close at {formatDateTime(expiryTime(l, graceSeconds))}. The contract will refuse this until then.</Notice>
+        )}
+        {roleWarning && <Notice tone="warning" className="mt-3">{roleWarning}</Notice>}
         <Notice tone="warning" className="mt-3">
           {viewer === "shop" && dialog === "cancel"
             ? "A shop cancellation charges no fee: the customer gets back everything paid."
@@ -306,7 +355,7 @@ export function NotFoundAgreement({ viewer }: { viewer: Viewer }) {
   return (
     <Card className="grid justify-items-start gap-2">
       <h1 className="text-2xl font-bold">Lay-by not found</h1>
-      <p className="text-muted">There is no agreement with that ID for this wallet.</p>
+      <p className="text-muted">The contract has no lay-by with that ID.</p>
       <ButtonLink href={viewer === "customer" ? "/customer" : "/shop"} variant="secondary">
         Back to dashboard
       </ButtonLink>

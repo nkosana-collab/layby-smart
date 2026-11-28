@@ -39,8 +39,8 @@ export interface LayBy extends LayByRecord {
 }
 
 /** One decoded contract event, as the timeline and activity views show it. */
-export type LayByEvent = { id: bigint; txHash?: TxHash; timestamp?: bigint } & (
-  | { kind: "Created"; shop: Address; customer: Address; price: bigint; feeBps: number }
+export type LayByEvent = { id: bigint; txHash?: TxHash; timestamp?: bigint; blockNumber?: bigint; logIndex?: number } & (
+  | { kind: "Created"; shop: Address; customer: Address; price: bigint; feeBps: number; item?: string; completionDate?: bigint }
   | { kind: "Payment"; payer: Address; amount: bigint; newBalance: bigint }
   | { kind: "Completed"; totalPaid: bigint }
   | { kind: "Collected"; amountReleased: bigint }
