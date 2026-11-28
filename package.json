@@ -4,7 +4,8 @@
   "description": "",
   "main": "hardhat.config.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx hardhat test",
+    "test:node": "npx hardhat node &  sleep 2 && npx hardhat test --network localhost"
   },
   "repository": {
     "type": "git",
@@ -20,8 +21,10 @@
   "homepage": "https://github.com/nkosana-collab/layby-smart#readme",
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^4.2.3",
+    "chai": "^6.3.0",
     "dotenv": "^18.0.10",
     "ethers": "^6.17.0",
-    "hardhat": "^3.23.0"
+    "hardhat": "^3.23.0",
+    "mocha": "^12.0.3"
   }
 }
