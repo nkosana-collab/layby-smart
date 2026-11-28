@@ -94,7 +94,7 @@ Prototype behaviours to change for accuracy:
 | Phase | Output | Blocked by |
 |---|---|---|
 | 0 Audit | this doc, `contract-integration.md`, verifier, `contracts/deployed/LayBy.fuji.json` | done |
-| 1 Foundation | Next.js app, design tokens from the prototype, all routes and shared components with isolated, labelled fixtures | none |
+| 1 Foundation | Next.js app, design tokens from the prototype, all routes and shared components with isolated, labelled fixtures | **done, awaiting team review** (`frontend/README.md`) |
 | 2 Integration | wagmi/viem config, reads, write pipeline, history API (including `DepositMoved`) | D2 |
 | 3 Merchant | dashboard, create, cancel, expire | 2 |
 | 4 Customer | dashboard, pay, collect, cancel (+ move deposit if D6 approved) | 2, D6 |
