@@ -1,0 +1,237 @@
+<title>Lay-by Smart Run Sheet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400..700&family=Nunito+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column, a sticky rehearsal timer, time-coded tables per part of the 5-minute slot */
+:root {
+  --bg: #F7F4FC; --surface: #FCFAFE; --ink: #1C1530; --muted: #5A5273; --line: #DDD4EE;
+  --accent: #6130C6; --accent-soft: #EEE8F8; --now: #FFF1C7; --now-ink: #5B4300;
+  --ok: #1F7A4D; --warn: #8D590E;
+  --display: 'Newsreader', Georgia, serif; --text: 'Nunito Sans', Verdana, sans-serif; --mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #15101F; --surface: #1E1730; --ink: #EFEAF9; --muted: #B6ACCF; --line: #342A4D;
+  --accent: #B79BF5; --accent-soft: #2A2142; --now: #4A3B10; --now-ink: #FFE7A3; --ok: #7FD1A6; --warn: #F0C27A; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #15101F; --surface: #1E1730; --ink: #EFEAF9; --muted: #B6ACCF; --line: #342A4D;
+  --accent: #B79BF5; --accent-soft: #2A2142; --now: #4A3B10; --now-ink: #FFE7A3; --ok: #7FD1A6; --warn: #F0C27A; color-scheme: dark; }
+
+body { background: var(--bg); color: var(--ink); font: 16px/1.55 var(--text); }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 32px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 40px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(2rem, 5vw, 3rem); }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.2rem; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font-size: .78rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--muted); }
+code, .mono { font-family: var(--mono); font-size: .88em; }
+a { color: var(--accent); }
+
+header.top { display: flex; flex-direction: column; gap: 12px; }
+.split { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: 4px 12px; font-weight: 700; font-size: .85rem; }
+nav.toc { display: flex; flex-wrap: wrap; gap: 6px 16px; font-weight: 700; font-size: .95rem; }
+
+.timer { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.clock { font-family: var(--mono); font-size: 1.6rem; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 6ch; }
+.timer label { font-weight: 700; font-size: .9rem; }
+.timer select, .timer button { font: inherit; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 6px 12px; }
+.timer button { background: var(--accent); color: var(--surface); border-color: var(--accent); font-weight: 800; cursor: pointer; }
+.timer button.ghost { background: transparent; color: var(--accent); }
+.timer button:focus-visible, .timer select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.timer .status { font-size: .9rem; color: var(--muted); }
+
+.anchors { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.anchor { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.anchor .n { font-family: var(--display); font-size: 1.9rem; color: var(--accent); line-height: 1; }
+.anchor q { font-family: var(--display); font-size: 1.2rem; font-weight: 600; quotes: "“" "”"; }
+
+section { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 90px; }
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 720px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+th { font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+td.t { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--muted); }
+td.say { font-family: var(--display); font-size: 1.08rem; }
+tr.now { background: var(--now); }
+tr.now td, tr.now td.t { color: var(--now-ink); }
+.k { font-weight: 800; }
+.note { background: var(--accent-soft); border-radius: 12px; padding: 12px 14px; }
+.flag { color: var(--warn); font-weight: 800; }
+.ok { color: var(--ok); font-weight: 800; }
+ul.qa { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; max-width: 80ch; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+<header class="top">
+<p class="eyebrow">Avalanche Uncharted · 5-minute slot</p>
+<h1>Lay-by Smart run sheet</h1>
+<p class="muted">2:00 talk, then 3:00 live demo. Every line is timed at about 145 words a minute. Rehearse with the timer below and the current line lights up.</p>
+<div class="split"><span class="chip">Talk 2:00</span><span class="chip">Demo 3:00</span><span class="chip">Contract 0xb124…2936 on Fuji</span></div>
+<nav class="toc" aria-label="Sections"><a href="#anchors">Anchors</a><a href="#talk-b">Talk · Version B</a><a href="#talk-a">Talk · Version A</a><a href="#prep">Demo prep</a><a href="#demo">Demo</a><a href="#rescue">If it breaks</a><a href="#numbers">Numbers</a><a href="#qa">Q&amp;A</a></nav>
+</header>
+
+<div class="timer" role="group" aria-label="Rehearsal timer">
+<span class="clock" id="clock" aria-live="off">0:00</span>
+<label for="part">Rehearse</label>
+<select id="part">
+<option value="talk-b">Talk · Version B (2:00)</option>
+<option value="talk-a">Talk · Version A (2:00)</option>
+<option value="demo">Demo (3:00)</option>
+</select>
+<button id="go" type="button">Start</button>
+<button id="reset" type="button" class="ghost">Reset</button>
+<span class="status" id="status" aria-live="polite">Ready</span>
+</div>
+
+<section id="anchors">
+<p class="eyebrow">Say each one at least twice</p>
+<h2>The three anchors</h2>
+<div class="anchors">
+<div class="anchor"><span class="n">1</span><q>Every instalment names its lay-by.</q><p class="muted">Each payment goes to one agreement ID, never the cashier’s guess.</p></div>
+<div class="anchor"><span class="n">2</span><q>The money waits in the contract, not the till.</q><p class="muted">The shop is paid only when the customer confirms collection.</p></div>
+<div class="anchor"><span class="n">3</span><q>Fee fixed up front, never more than 1%.</q><p class="muted">The Consumer Protection Act’s cap, enforced in code.</p></div>
+</div>
+</section>
+
+<section id="talk-b">
+<p class="eyebrow">Recommended deck · Lay-by Smart pitch</p>
+<h2>Talk · Version B (Bona format)</h2>
+<p class="muted">280 spoken words, about 1:56. Slides 9–11 are backup for questions only.</p>
+<div class="tbl"><table data-part="talk-b">
+<tr><th>Time</th><th>Slide</th><th>Say this</th><th>Point at</th></tr>
+<tr data-s="0" data-e="8"><td class="t">0:00–0:08</td><td class="k">1 · Cover</td><td class="say">“Hi, we’re [team name]. This is Lay-by Smart: lay-by where every instalment lands in the lay-by it was meant for.”</td><td>The subtitle</td></tr>
+<tr data-s="8" data-e="28"><td class="t">0:08–0:28</td><td class="k">2 · The problem</td><td class="say">“Picture a customer paying off a TV at one shop and a fridge at another. She pays R500 for the TV, and the cashier credits it to the fridge. The only record is a paper slip or the shop’s own system. So it’s her word against theirs.”</td><td>Red arrow: meant for the TV, credited to the fridge</td></tr>
+<tr data-s="28" data-e="46"><td class="t">0:28–0:46</td><td class="k">3 · How big</td><td class="say">“Seventy-two percent of South Africans say their money got tighter this year, and lay-by is how families buy without debt. The Consumer Protection Act caps the cancellation fee at one percent. But it’s enforced on paper, and stores have still said ‘no refund’.”</td><td><b>72%</b> and <b>1%</b></td></tr>
+<tr data-s="46" data-e="70"><td class="t">0:46–1:10</td><td class="k">4 · Our solution</td><td class="say">“Lay-by Smart gives every lay-by its own ID on Avalanche. The shop creates it. The customer pays into that ID only. The money waits in a smart contract, not the till. The shop is paid when the customer confirms she has the item. And the fee is fixed on day one, never more than one percent.”</td><td>Pill row, then table row “Who holds the money”</td></tr>
+<tr data-s="70" data-e="85"><td class="t">1:10–1:25</td><td class="k">5 · Six ideas</td><td class="say">“In plain words: a smart contract is a program that holds money and can only follow its rule. Everyone signs with their own wallet. Every payment is a public receipt. And nobody can change the rule. Not even us.”</td><td>“Can’t be changed” card</td></tr>
+<tr data-s="85" data-e="98"><td class="t">1:25–1:38</td><td class="k">6 · Business model</td><td class="say">“Shops pay a small monthly plan, and we share the fee of a regulated partner that moves rand in and out. Later, retail groups license it. We never hold the money.”</td><td>The dark promise bar</td></tr>
+<tr data-s="98" data-e="110"><td class="t">1:38–1:50</td><td class="k">7 · Why us</td><td class="say">“It’s live on Avalanche today, and we checked that the deployed code matches our source exactly. It’s built on the CPA’s own rules. Every instalment names its lay-by.”</td><td>The big line</td></tr>
+<tr data-s="110" data-e="120"><td class="t">1:50–2:00</td><td class="k">8 · Three tries</td><td class="say">“Let us show you. Watch for three things the contract refuses, and one payout it allows.”</td><td>Switch to the demo</td></tr>
+</table></div>
+</section>
+
+<section id="talk-a">
+<p class="eyebrow">Alternative deck · Lay-Smart</p>
+<h2>Talk · Version A (original style)</h2>
+<p class="muted">233 spoken words, about 1:36, which leaves room for pauses.</p>
+<div class="tbl"><table data-part="talk-a">
+<tr><th>Time</th><th>Slide</th><th>Say this</th></tr>
+<tr data-s="0" data-e="6"><td class="t">0:00–0:06</td><td class="k">1 · Lay-Smart</td><td class="say">“I’m [presenter], and this is Lay-Smart.”</td></tr>
+<tr data-s="6" data-e="14"><td class="t">0:06–0:14</td><td class="k">2 · We have a PROBLEM</td><td class="say">“An instalment goes into the wrong lay-by, and nobody can prove what was paid.”</td></tr>
+<tr data-s="14" data-e="32"><td class="t">0:14–0:32</td><td class="k">3 · CPA awareness</td><td class="say">“One customer, many shops, and paper records. Yet the Consumer Protection Act already says how lay-by should work: the money stays yours until delivery, the fee is capped at one percent and shown up front, and you get the rest back. The rules exist. Nobody enforces them.”</td></tr>
+<tr data-s="32" data-e="47"><td class="t">0:32–0:47</td><td class="k">4 · Lay-Smart</td><td class="say">“Lay-Smart puts those rules in a smart contract: CPA in code, every lay-by in one place, blockchain proof for every payment, and the freedom to pay what you can.”</td></tr>
+<tr data-s="47" data-e="62"><td class="t">0:47–1:02</td><td class="k">5 · Flexibility</td><td class="say">“Life changes. Shoes today, medicine tomorrow. So you can pay any amount, move a deposit to another lay-by at the same shop, and cancel knowing the fee first.”</td></tr>
+<tr data-s="62" data-e="74"><td class="t">1:02–1:14</td><td class="k">6 · Escrow</td><td class="say">“The money doesn’t go to the shop. It waits in the contract, and the shop is paid when you confirm collection.”</td></tr>
+<tr data-s="74" data-e="88"><td class="t">1:14–1:28</td><td class="k">7 · Lifecycle</td><td class="say">“Active, completed, collected. Or it ends early: you cancel and pay at most one percent, the shop cancels and refunds everything, or it expires after the grace period.”</td></tr>
+<tr data-s="88" data-e="100"><td class="t">1:28–1:40</td><td class="k">8 · Hypothesis</td><td class="say">“Our bet: when every instalment has its own ID and a public receipt, wrong-lay-by disputes stop being one word against another. The risks are wallets, rand on-ramps, and shops agreeing to wait.”</td></tr>
+<tr data-s="100" data-e="110"><td class="t">1:40–1:50</td><td class="k">9 · Check it yourself</td><td class="say">“It’s live on Avalanche Fuji, and the code on-chain matches our source exactly. No admin, no withdraw button.”</td></tr>
+<tr data-s="110" data-e="120"><td class="t">1:50–2:00</td><td class="k">10 · Conclusion</td><td class="say">“Right lay-by, fair rules, public proof. Let us show you.”</td></tr>
+</table></div>
+</section>
+
+<section id="prep">
+<p class="eyebrow">At least 15 minutes before</p>
+<h2>Demo prep</h2>
+<div class="tbl"><table>
+<tr><th>#</th><th>Prep</th><th>Why</th></tr>
+<tr><td class="t">P1</td><td>Four MetaMask accounts on Fuji with test AVAX: <b>Shop A</b>, <b>Shop B</b>, <b>Customer</b>, <b>Stranger</b>.</td><td>Every role signs with its own wallet.</td></tr>
+<tr><td class="t">P2</td><td>Shop A creates <b>TV #1</b>: 0.10 AVAX, fee 1%, completion tomorrow. Customer pays <b>0.06</b>.</td><td>A lay-by in progress.</td></tr>
+<tr><td class="t">P3</td><td>Shop B creates <b>Fridge #2</b> for the same customer: 0.08 AVAX, 1%, completion tomorrow. Customer pays <b>0.02</b>.</td><td>Two shops on one dashboard.</td></tr>
+<tr><td class="t">P4</td><td>About <b>10 minutes before</b>, Shop A creates <b>Sofa #3</b>: 0.06 AVAX, 1%, completion 5 minutes ahead. Customer pays <b>0.01</b>.</td><td>The grace period is 120 s, so it is overdue by demo time.</td></tr>
+<tr><td class="t">P5</td><td>Open tabs: app as Customer, app as Shop A, Snowtrace on the contract.</td><td>No typing on stage.</td></tr>
+<tr><td class="t">P6</td><td>Fallback: a screen recording of a full run, and Remix with the contract loaded at its address.</td><td>For Wi-Fi, RPC or wallet trouble.</td></tr>
+</table></div>
+<p class="note">Say on stage: “We created these three lay-bys before the session. Everything you see next is live.”</p>
+</section>
+
+<section id="demo">
+<p class="eyebrow">Live on Fuji</p>
+<h2>Demo · 3:00, step by step</h2>
+<div class="tbl"><table data-part="demo">
+<tr><th>Time</th><th>Step</th><th>Do</th><th>Judges see</th><th>Say</th></tr>
+<tr data-s="0" data-e="20"><td class="t">0:00–0:20</td><td class="k">1 · One dashboard</td><td>Customer opens My lay-bys</td><td>TV #1 (Shop A), Fridge #2 (Shop B), Sofa #3 (Shop A, Overdue)</td><td class="say">“One customer, two shops, three lay-bys, each with its own ID.”</td></tr>
+<tr data-s="20" data-e="45"><td class="t">0:20–0:45</td><td class="k">2 · Pay the right lay-by</td><td>TV #1 → Pay 0.02 → confirm → sign</td><td>Dialog: #1, Shop A’s wallet, 0.02 left after. Receipt with Snowtrace link. 0.08 / 0.10</td><td class="say">“Every instalment names its lay-by. Only #1 moved.”</td></tr>
+<tr data-s="45" data-e="60"><td class="t">0:45–1:00</td><td class="k">3 · Try 1: stranger</td><td>Switch to Stranger, try to pay TV #1</td><td><code>Only the customer can pay</code></td><td class="say">“The contract said no, not our app.”</td></tr>
+<tr data-s="60" data-e="72"><td class="t">1:00–1:12</td><td class="k">4 · Try 2: overpay</td><td>Customer enters 0.05 (0.02 left)</td><td><code>Payment exceeds remaining balance</code></td><td class="say">“You can’t overpay into a lay-by.”</td></tr>
+<tr data-s="72" data-e="92"><td class="t">1:12–1:32</td><td class="k">5 · Fully paid ≠ shop paid</td><td>Pay remaining balance (0.02)</td><td>Status Completed, escrow still 0.10</td><td class="say">“The money waits in the contract, not the till.”</td></tr>
+<tr data-s="92" data-e="112"><td class="t">1:32–1:52</td><td class="k">6 · Collection = payout</td><td>Confirm collection, tick “I received my item”, sign</td><td>Collected. 0.10 released to Shop A</td><td class="say">“The one payout: only when she has the TV.”</td></tr>
+<tr data-s="112" data-e="125"><td class="t">1:52–2:05</td><td class="k">7 · Try 3: expire early</td><td>Shop B → Fridge #2 → Settle expiry</td><td><code>Expiry time not reached</code></td><td class="say">“The shop can’t end it early.”</td></tr>
+<tr data-s="125" data-e="145"><td class="t">2:05–2:25</td><td class="k">8 · Fair cancellation</td><td>Customer → Fridge #2 → Cancel → sign</td><td>Paid 0.02, fee 0.0008 (1% of 0.08), refund 0.0192</td><td class="say">“Fee fixed up front, never more than 1%. She sees it before she signs.”</td></tr>
+<tr data-s="145" data-e="165"><td class="t">2:25–2:45</td><td class="k">9 · Expiry settles itself</td><td>Shop A → Sofa #3 (overdue) → Settle expiry → sign</td><td>Fee 0.0006 to Shop A, refund 0.0094. Expired</td><td class="say">“Time ran out, so the rule split the money.”</td></tr>
+<tr data-s="165" data-e="180"><td class="t">2:45–3:00</td><td class="k">10 · Check it yourself</td><td>Snowtrace tab → contract events</td><td>Each step as its own public record</td><td class="say">“Every step you just saw is on Avalanche. Check it yourself. Thank you.”</td></tr>
+</table></div>
+<p class="note">The three tries are rejected when the app simulates the transaction, before anyone signs, so no gas is spent. From Remix, MetaMask shows “likely to fail”: cancel it and read the reason aloud.</p>
+</section>
+
+<section id="rescue">
+<h2>If something breaks</h2>
+<div class="tbl"><table>
+<tr><th>Problem</th><th>Do this</th><th>Say</th></tr>
+<tr><td>No wallet pop-up</td><td>Click the MetaMask icon. The request is waiting there.</td><td class="say">“The wallet is asking her to sign.”</td></tr>
+<tr><td>RPC slow or failing</td><td>Jump to step 10 and show the prep transactions on Snowtrace.</td><td class="say">“Here are the same steps from earlier today.”</td></tr>
+<tr><td>Sofa not overdue yet</td><td>Skip step 9, show the countdown.</td><td class="say">“The shop can settle it in N seconds. The contract checks the clock.”</td></tr>
+<tr><td>App broken</td><td>Play the recording and narrate the same anchors.</td><td class="muted">—</td></tr>
+</table></div>
+</section>
+
+<section id="numbers">
+<h2>Numbers you can quote</h2>
+<div class="tbl"><table>
+<tr><th>Claim</th><th>Source</th><th>Status</th></tr>
+<tr><td>Cancellation penalty may not exceed <b>1%</b> of the full price</td><td><a href="https://www.acts.co.za/consumer-protection-act-/r293_34__maximum_amount_of_cancellation_penalty_for_lay_by_s.php">CPA Regulation 34</a></td><td class="ok">Quote as fact</td></tr>
+<tr><td>A penalty applies only after the consumer cancels or misses completion by <b>60 business days</b>, and only if disclosed up front</td><td><a href="https://www.acts.co.za/consumer-protection/62_lay_bys">CPA section 62</a></td><td class="ok">Quote as fact</td></tr>
+<tr><td>Some retailers told cancelling customers “no refund” or charged <b>10%</b></td><td><a href="https://www.timeslive.co.za/news/consumer-live/2017-04-26-if-opting-for-lay-by-check-that-stores-policy-is-cpa-compliant/">TimesLIVE, 2017</a></td><td>Say “have”, not “do”</td></tr>
+<tr><td>Stretched shoppers use lay-by instead of credit to avoid debt</td><td><a href="https://www.businessday.co.za/redzone/news-insights/2024-05-24-snapshot-of-the-state-of-south-african-consumers/">Kantar via BusinessDay, 2024</a></td><td>Qualitative only</td></tr>
+<tr><td><b>72%</b> say their finances stagnated or worsened in the past year</td><td><a href="https://mzansiurbanreport.com/2026/08/24/squeezed-south-african-shoppers-demand-proof-brands-deliver-study-finds/">SA Customer Experience Report 2026, via Mzansi Urban Report</a></td><td class="flag">Check the original before quoting</td></tr>
+<tr><td>Grace period 120 s, fee cap 100 bps, contract <span class="mono">0xb124C7778D0715ad1D51e22a18cDb95Cd23d2936</span>, block 61,758,464</td><td>Read from the deployed contract</td><td class="ok">Verified on-chain</td></tr>
+</table></div>
+<p class="muted">We found no reliable published figure for how many South Africans use lay-by. Don’t quote one unless the team finds a sourced number.</p>
+</section>
+
+<section id="qa">
+<h2>Likely questions</h2>
+<ul class="qa">
+<li><b>What if the customer never confirms collection?</b> The money stays in the contract. The shop can cancel and refund in full. A timed shop claim is on the roadmap.</li>
+<li><b>Can anyone pretend to be a shop?</b> Yes, any wallet can create a lay-by. The app always shows the shop’s wallet and never shows a “verified” badge. A shop registry is next.</li>
+<li><b>Why not just a database?</b> A database is controlled by whoever runs it. Here neither the shop nor we can move the money or change the fee, and the customer can check it herself.</li>
+<li><b>Real rand?</b> Test AVAX today. Real use needs a regulated partner to move rand in and out.</li>
+<li><b>Privacy?</b> Only wallet addresses and made-up item labels go on-chain, and they are public. No names or ID numbers.</li>
+<li><b>Can a customer dodge the fee?</b> Moving a deposit to another lay-by at the same shop can avoid one lay-by’s fee. The money still stays with that shop. It’s a documented limit.</li>
+</ul>
+</section>
+</div>
+
+<script>
+(function () {
+  var clock = document.getElementById('clock'), part = document.getElementById('part'),
+      go = document.getElementById('go'), reset = document.getElementById('reset'), status = document.getElementById('status');
+  var limits = { 'talk-b': 120, 'talk-a': 120, 'demo': 180 };
+  var started = 0, elapsed = 0, tick = null;
+  function fmt(s) { s = Math.floor(s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+  function rows() { return document.querySelectorAll('table[data-part="' + part.value + '"] tr[data-s]'); }
+  function clear() { document.querySelectorAll('tr.now').forEach(function (r) { r.classList.remove('now'); }); }
+  function paint() {
+    var s = elapsed + (tick ? (Date.now() - started) / 1000 : 0), cur = null;
+    clock.textContent = fmt(s);
+    clear();
+    rows().forEach(function (r) { if (s >= +r.dataset.s && s < +r.dataset.e) { r.classList.add('now'); cur = r; } });
+    var limit = limits[part.value];
+    if (s >= limit) { stop(); elapsed = limit; clock.textContent = fmt(limit); status.textContent = 'Time. ' + fmt(limit) + ' is up.'; return; }
+    status.textContent = cur ? cur.querySelector('.k').textContent : 'Running';
+  }
+  function stop() { if (tick) { elapsed += (Date.now() - started) / 1000; clearInterval(tick); tick = null; go.textContent = 'Start'; } }
+  go.addEventListener('click', function () {
+    if (tick) { stop(); status.textContent = 'Paused at ' + fmt(elapsed); return; }
+    if (elapsed >= limits[part.value]) elapsed = 0;
+    started = Date.now(); tick = setInterval(paint, 250); go.textContent = 'Pause'; paint();
+    var first = rows()[0]; if (first && elapsed === 0) first.closest('section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  reset.addEventListener('click', function () { stop(); elapsed = 0; clear(); clock.textContent = '0:00'; status.textContent = 'Ready'; });
+  part.addEventListener('change', function () { stop(); elapsed = 0; clear(); clock.textContent = '0:00'; status.textContent = 'Ready'; });
+})();
+</script>
