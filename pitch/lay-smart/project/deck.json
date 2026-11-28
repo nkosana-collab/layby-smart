@@ -1,0 +1,19 @@
+{
+  "v": 5,
+  "createdOnFiles": { "v": 1, "at": "2026-11-28T12:30:00Z" },
+  "lists": "css",
+  "format": { "v": 1, "shared": ["project/deck.css"] },
+  "title": "Lay-Smart",
+  "cover": "cover",
+  "order": ["cover", "problem", "cpa", "solution", "flexibility", "escrow", "lifecycle", "hypothesis", "proof", "conclusion"],
+  "sections": {
+    "s1": { "description": "Why lay-by needs fixing: wrong-lay-by payments and the CPA rules shops must follow.", "start": "cover" },
+    "s2": { "description": "What Lay-Smart is and how the contract holds the money.", "start": "solution" },
+    "s3": { "description": "Why we believe it works, the live proof on Fuji, and the close.", "start": "hypothesis" }
+  },
+  "faces": {
+    "old-standard-tt": { "family": "Old Standard TT", "href": "https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap" },
+    "jetbrains-mono": { "family": "JetBrains Mono", "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" }
+  },
+  "designSystems": []
+}

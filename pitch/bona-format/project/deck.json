@@ -1,0 +1,21 @@
+{
+  "v": 5,
+  "createdOnFiles": { "v": 1, "at": "2026-11-28T12:45:00Z" },
+  "lists": "css",
+  "format": { "v": 1, "shared": ["project/deck.css"] },
+  "title": "Lay-by Smart pitch",
+  "cover": "cover",
+  "order": ["cover", "problem", "market", "solution", "blockchain", "business", "whyus", "live", "who", "limits", "status"],
+  "sections": {
+    "s1": { "description": "The problem: instalments credited to the wrong lay-by, with no shared proof.", "start": "cover" },
+    "s2": { "description": "The solution, the live demo, and blockchain in plain words.", "start": "solution" },
+    "s3": { "description": "How it makes money, why this team, and the hand-off into the live demo.", "start": "business" },
+    "s4": { "description": "Backup: permissions, honest limits, and what is live versus in progress.", "start": "who" }
+  },
+  "faces": {
+    "newsreader": { "family": "Newsreader", "href": "https://fonts.googleapis.com/css2?family=Newsreader:wght@400..700&display=swap" },
+    "nunito-sans": { "family": "Nunito Sans", "href": "https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" },
+    "jetbrains-mono": { "family": "JetBrains Mono", "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" }
+  },
+  "designSystems": []
+}

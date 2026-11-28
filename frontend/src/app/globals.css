@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens extracted from docs/design/layby-smart-prototype.html
+ * (see docs/implementation-plan.md §6). Light theme only, as approved.
+ */
+@theme {
+  --color-primary: #6130c6;
+  --color-primary-hover: #5427b0;
+  --color-primary-soft: #eee8fb;
+  --color-primary-text: #5933a0;
+  --color-primary-deep: #49318a;
+  --color-notice: #f0ebfb;
+  --color-notice-text: #53398a;
+  --color-bg: #f7f6fa;
+  --color-surface: #ffffff;
+  --color-ink: #201b32;
+  --color-muted: #655e76;
+  --color-subtle: #736b83;
+  --color-border: #e7e2ee;
+  --color-border-input: #dcd5e7;
+  --color-border-button: #ddd5ee;
+  --color-divider: #eeeaf3;
+  --color-track: #e8e4ee;
+  --color-pic: #f0ebfa;
+
+  --color-success-bg: #e1f4e9;
+  --color-success: #206942;
+  --color-success-bar: #34a36e;
+  --color-warning-bg: #fff2dc;
+  --color-warning: #8d590e;
+  --color-danger-bg: #fce8e7;
+  --color-danger-soft: #fff0ef;
+  --color-danger: #a33b36;
+  --color-neutral-bg: #eeeef2;
+  --color-neutral: #555555;
+  --color-toast: #213f30;
+
+  --radius-card: 15px;
+  --radius-button: 9px;
+  --radius-input: 8px;
+  --radius-hero: 30px;
+  --radius-float: 18px;
+  --radius-pic: 12px;
+
+  --shadow-card: 0 3px 10px #2f1b4c05;
+  --shadow-float: 0 12px 30px #4e288b13;
+  --shadow-dialog: 0 10px 40px #25144233;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Prototype mobile breakpoint was 760px. */
+  --breakpoint-md: 47.5rem;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font: 15px/1.5 var(--font-sans);
+}
+
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+dialog::backdrop {
+  background: #1b123080;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
